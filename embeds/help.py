@@ -42,6 +42,12 @@ def create_help_embed():
         inline=False
     )
 
+    embed.add_field(
+        name="5 -sync",
+        value="Manually sync your TypeGG daily scores.",
+        inline=False
+    )
+
     embed.set_footer(
         text="VIT Typing Club • Happy Typing!"
     )

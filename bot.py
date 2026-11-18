@@ -11,9 +11,11 @@ from embeds.daily_quote import create_daily_quote_embed
 from embeds.daily_graph import create_daily_graph_embed
 from embeds.help import create_help_embed
 from embeds.top import create_top_embed
+from embeds.typegg_sync import create_typegg_sync_embed
 from scheduler.jobs import post_daily_quote, post_final_leaderboard
 from services.typegg_stats import get_user_daily_scores
 from services.typingclub_api import get_daily_data
+from services.typegg_sync import sync_typegg_scores
 from services.typegg_stats import get_top_players
 from db_connect import Database
 
@@ -174,6 +176,13 @@ async def top(ctx: commands.Context, limit: int = 10):
 
     embed = create_top_embed(players)
 
+    await ctx.send(embed=embed)
+
+@bot.command(name="sync")
+async def sync(ctx: commands.Context):
+    """Manually sync daily TypeGG scores."""
+    result = await sync_typegg_scores(str(ctx.author.id))
+    embed = create_typegg_sync_embed(result)
     await ctx.send(embed=embed)
 
 if __name__ == "__main__":
