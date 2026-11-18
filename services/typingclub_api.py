@@ -5,10 +5,11 @@ from config import API_URL
 
 async def get_daily_data():
     timeout = aiohttp.ClientTimeout(total=15)
+    url = f"{API_URL}/api/scores/typegg/daily"
 
     try:
         async with aiohttp.ClientSession(timeout=timeout) as session:
-            async with session.get(API_URL) as response:
+            async with session.get(url) as response:
 
                 response.raise_for_status()
                 data = await response.json()

@@ -6,7 +6,7 @@ load_dotenv()
 
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 DISCORD_CHANNEL_ID = int(os.getenv("DISCORD_CHANNEL_ID", "0"))
-API_URL = os.getenv("API_URL", "http://127.0.0.1:5000/api/scores/typegg/daily")
+API_URL = os.getenv("API_URL", "http://127.0.0.1:5000")
 TIMEZONE = os.getenv("TIMEZONE", "Asia/Kolkata")
 DATABASE_URL = os.getenv("DATABASE_URL")
 DATABASE_USERNAME = os.getenv("DATABASE_USERNAME")
