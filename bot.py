@@ -10,6 +10,7 @@ from embeds.daily_leaderboard import create_daily_leaderboard_embed
 from embeds.daily_quote import create_daily_quote_embed
 from scheduler.jobs import post_daily_quote, post_final_leaderboard
 from services.typingclub_api import get_daily_data
+from db_connect import Database
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(message)s")
 log = logging.getLogger("typingclub")
@@ -22,9 +23,11 @@ class TypingClubBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="-", intents=intents)
         self.scheduler = AsyncIOScheduler(timezone=TIMEZONE)
+        self.db = Database()
 
     async def setup_hook(self):
         """Runs once before the bot connects, so jobs are never registered twice."""
+        await self.db.connect()
         self._register_jobs()
         self.scheduler.start()
 
@@ -53,6 +56,10 @@ class TypingClubBot(commands.Bot):
     async def on_ready(self):
         log.info("Logged in as %s", self.user)
 
+    async def close(self):
+        self.scheduler.shutdown(wait=False)
+        await self.db.close()
+        await super().close()
 
 bot = TypingClubBot()
 
