@@ -8,6 +8,8 @@ from discord.ext import commands
 from config import DISCORD_TOKEN, TIMEZONE
 from embeds.daily_leaderboard import create_daily_leaderboard_embed
 from embeds.daily_quote import create_daily_quote_embed
+from embeds.daily_graph import create_daily_graph_embed
+from embeds.help import create_help_embed
 from scheduler.jobs import post_daily_quote, post_final_leaderboard
 from services.typingclub_api import get_daily_data
 from db_connect import Database
@@ -74,6 +76,12 @@ async def _send_daily_embed(ctx: commands.Context, build_embed):
 
     await ctx.send(embed=build_embed(data))
 
+
+@bot.command(name="h")
+async def help_command(ctx: commands.Context):
+    """Show available TypingClub commands."""
+
+    await ctx.send(embed=create_help_embed())
 
 @bot.command(name="daily")
 async def daily(ctx: commands.Context):
