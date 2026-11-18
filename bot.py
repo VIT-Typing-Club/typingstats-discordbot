@@ -61,6 +61,9 @@ class TypingClubBot(commands.Bot):
             )
 
     async def on_ready(self):
+        await self.change_presence(
+            activity=discord.Game(name="-h, use prefix -")
+        )
         log.info("Logged in as %s", self.user)
 
     async def close(self):
