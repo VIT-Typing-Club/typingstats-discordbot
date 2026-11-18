@@ -31,6 +31,17 @@ def create_help_embed():
         inline=False
     )
 
+    embed.add_field(
+        name="4. -top",
+        value=(
+            "View the all-time daily player rankings, "
+            "ranked by total PP.\n"
+            "`-top` — Top 10 players\n"
+            "`-top 5` — Top 5 players"
+        ),
+        inline=False
+    )
+
     embed.set_footer(
         text="VIT Typing Club • Happy Typing!"
     )

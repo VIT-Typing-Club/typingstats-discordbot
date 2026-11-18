@@ -10,9 +10,11 @@ from embeds.daily_leaderboard import create_daily_leaderboard_embed
 from embeds.daily_quote import create_daily_quote_embed
 from embeds.daily_graph import create_daily_graph_embed
 from embeds.help import create_help_embed
+from embeds.top import create_top_embed
 from scheduler.jobs import post_daily_quote, post_final_leaderboard
 from services.typegg_stats import get_user_daily_scores
 from services.typingclub_api import get_daily_data
+from services.typegg_stats import get_top_players
 from db_connect import Database
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(message)s")
@@ -151,10 +153,28 @@ async def daily_graph(
     embed, file = create_daily_graph_embed(target, scores)
 
     embed.set_footer(
-        text=f"TypingClub • {'All Time' if days is None else f'Last {days} Days'}"
+        text=f"VIT Typing Club • {'All Time' if days is None else f'Last {days} Days'}"
     )
 
     await ctx.send(embed=embed, file=file)
+
+@bot.command(name="top")
+async def top(ctx: commands.Context, limit: int = 10):
+    """Show the top Daily players."""
+
+    if limit < 1 or limit > 25:
+        await ctx.send("Please choose a limit between 1 and 25.")
+        return
+
+    players = await get_top_players(ctx.bot.db, limit)
+
+    if not players:
+        await ctx.send("No typing scores have been recorded yet!")
+        return
+
+    embed = create_top_embed(players)
+
+    await ctx.send(embed=embed)
 
 if __name__ == "__main__":
     if not DISCORD_TOKEN:
