@@ -11,6 +11,7 @@ from embeds.daily_quote import create_daily_quote_embed
 from embeds.daily_graph import create_daily_graph_embed
 from embeds.help import create_help_embed
 from scheduler.jobs import post_daily_quote, post_final_leaderboard
+from services.typegg_stats import get_user_daily_scores
 from services.typingclub_api import get_daily_data
 from db_connect import Database
 
@@ -95,6 +96,65 @@ async def leaderboard(ctx: commands.Context):
     await _send_daily_embed(ctx, create_daily_leaderboard_embed)
 
 
+@bot.command(name="daily_graph", aliases=["dg"])
+async def daily_graph(
+    ctx: commands.Context,
+    arg1: str = None,
+    arg2: str = None
+):
+    """Show daily performance graph for user."""
+
+    days = None
+    target = ctx.author
+
+    args = [arg for arg in (arg1, arg2) if arg is not None]
+
+    for arg in args:
+        if arg.lower() == "all":
+            days = None
+            continue
+
+        try:
+            parsed_days = int(arg)
+
+            if parsed_days <= 0:
+                await ctx.send("Please provide a positive number of days.")
+                return
+
+            days = parsed_days
+            continue
+
+        except ValueError:
+            pass
+
+        try:
+            target = await commands.MemberConverter().convert(ctx, arg)
+
+        except commands.MemberNotFound:
+            await ctx.send(f"Couldn't find a Discord member matching `{arg}`.")
+            return
+
+    scores = await get_user_daily_scores(
+        ctx.bot.db,
+        str(target.id),
+        days=days
+    )
+
+    if not scores:
+        period = f"in the last {days} days" if days else "all time"
+
+        await ctx.send(
+            f"{target.display_name} has no recorded typing scores {period}."
+        )
+        return
+
+    embed, file = create_daily_graph_embed(target, scores)
+
+    embed.set_footer(
+        text=f"TypingClub • {'All Time' if days is None else f'Last {days} Days'}"
+    )
+
+    await ctx.send(embed=embed, file=file)
 
 if __name__ == "__main__":
     if not DISCORD_TOKEN:
